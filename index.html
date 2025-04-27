@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Free Fire Tournament Points Table</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f5f5f5;
+      font-family: Arial, sans-serif;
+    }
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      max-width: 1000px;
+      background-color: #fff;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+      border-radius: 10px;
+      overflow: hidden;
+      text-align: center;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 10px;
+    }
+    th {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 18px;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+      transition: 0.3s;
+    }
+    td {
+      font-size: 16px;
+      color: #333;
+    }
+    td[contenteditable="true"] {
+      background-color: #fafafa;
+      cursor: text;
+    }
+    td[contenteditable="true"]:focus {
+      outline: 2px solid #4CAF50;
+    }
+    .button-group {
+      margin-top: 20px;
+    }
+    button {
+      margin: 8px 5px;
+      padding: 10px 18px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="button-group">
+  <button id="calculateButton">Calculate</button>
+  <button id="nextButton">Next</button>
+  <button id="finalButton">Final</button>
+  <button id="resetButton">Reset</button>
+  <button id="restoreButton">Restore Defaults</button>
+</div>
+
+<table id="pointsTable">
+  <thead>
+    <tr>
+      <th>Rank</th>
+      <th>Team Name</th>
+      <th>Booyah</th>
+      <th>Kill</th>
+      <th>Placement Rank</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <script>
+      for(let i=1;i<=12;i++){
+        document.write('<tr>');
+        document.write(`<td>${i}</td>`);
+        document.write('<td contenteditable="true"></td>');
+        document.write('<td contenteditable="true"></td>');
+        document.write('<td contenteditable="true"></td>');
+        document.write('<td contenteditable="true"></td>');
+        document.write('<td contenteditable="true"></td>');
+        document.write('</tr>');
+      }
+    </script>
+  </tbody>
+</table>
+
+<script>
+const table = document.getElementById('pointsTable');
+let teamMemory = [];
+
+function checkBooyahExists() {
+  const rows = table.querySelectorAll('tbody tr');
+  for (let row of rows) {
+    const booyah = parseInt(row.querySelectorAll('td')[2].innerText.trim()) || 0;
+    if (booyah > 0) return true;
+  }
+  return false;
+}
+
+function validateInputs() {
+  const booyahExists = checkBooyahExists();
+  const rows = table.querySelectorAll('tbody tr');
+
+  for (let row of rows) {
+    const cells = row.querySelectorAll('td');
+    const teamName = cells[1].innerText.trim();
+    const booyah = cells[2].innerText.trim();
+    const kill = cells[3].innerText.trim();
+    const placement = cells[4].innerText.trim();
+
+    if (teamName !== "") {
+      if (booyah === "" && kill === "" && placement === "") {
+        alert("⚠️ Insufficient values entered!");
+        return false;
+      }
+      if (!booyahExists && (placement === "")) {
+        alert("⚠️ Placement rank required when no Booyah exists!");
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function calculateRowTotal(row) {
+  const cells = row.querySelectorAll('td');
+  let booyah = parseInt(cells[2].innerText.trim()) || 0;
+  let kill = parseInt(cells[3].innerText.trim()) || 0;
+  let placement = parseInt(cells[4].innerText.trim()) || 0;
+  let total = 0;
+
+  if (booyah > 0) {
+    total += booyah * 12;
+    cells[4].innerText = 1; // Force placement 1
+  } else {
+    let placementPoints = 0;
+    if (placement === 1) placementPoints = 12;
+    else if (placement === 2) placementPoints = 9;
+    else if (placement === 3) placementPoints = 8;
+    else if (placement === 4) placementPoints = 7;
+    else if (placement === 5) placementPoints = 6;
+    else if (placement === 6) placementPoints = 5;
+    else if (placement === 7) placementPoints = 4;
+    else if (placement === 8) placementPoints = 3;
+    else if (placement === 9) placementPoints = 2;
+    else if (placement === 10) placementPoints = 1;
+    total += placementPoints;
+  }
+  total += kill;
+  cells[5].innerText = total;
+}
+
+function realTimeUpdate() {
+  const rows = table.querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    row.querySelectorAll('td')[2].addEventListener('input', () => calculateRowTotal(row));
+    row.querySelectorAll('td')[3].addEventListener('input', () => calculateRowTotal(row));
+    row.querySelectorAll('td')[4].addEventListener('input', () => calculateRowTotal(row));
+  });
+}
+
+realTimeUpdate();
+
+document.getElementById('calculateButton').addEventListener('click', function() {
+  if (!validateInputs()) return;
+  sortTable();
+});
+
+function sortTable() {
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+
+  rows.sort((a, b) => {
+    const aTotal = parseInt(a.querySelectorAll('td')[5].innerText) || 0;
+    const bTotal = parseInt(b.querySelectorAll('td')[5].innerText) || 0;
+    return bTotal - aTotal;
+  });
+
+  rows.forEach((row, index) => {
+    row.querySelector('td').innerText = index + 1;
+    tbody.appendChild(row);
+  });
+}
+
+document.getElementById('nextButton').addEventListener('click', function() {
+  if (!validateInputs()) return;
+  const rows = table.querySelectorAll('tbody tr');
+  const matchData = [];
+
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    const teamName = cells[1].innerText.trim();
+    const total = parseInt(cells[5].innerText.trim()) || 0;
+    matchData.push({ teamName, total });
+  });
+
+  teamMemory.push(matchData);
+
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    cells[2].innerText = '';
+    cells[3].innerText = '';
+    cells[4].innerText = '';
+    cells[5].innerText = '';
+  });
+
+  alert("✅ Data saved for this match. Now enter new match points.");
+});
+
+document.getElementById('finalButton').addEventListener('click', function() {
+  if (!validateInputs()) return;
+  const finalScores = {};
+
+  teamMemory.forEach(match => {
+    match.forEach(team => {
+      if (!finalScores[team.teamName]) {
+        finalScores[team.teamName] = 0;
+      }
+      finalScores[team.teamName] += team.total;
+    });
+  });
+
+  const rows = table.querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    const teamName = cells[1].innerText.trim();
+    if (teamName && finalScores[teamName] !== undefined) {
+      const average = Math.round(finalScores[teamName] / teamMemory.length);
+      cells[5].innerText = average;
+    } else {
+      cells[5].innerText = 0;
+    }
+  });
+
+  sortTable();
+  alert("🏆 Final Result Calculated based on average points!");
+});
+
+document.getElementById('resetButton').addEventListener('click', function() {
+  if (!confirm("Are you sure you want to reset all saved points but keep team names?")) return;
+  teamMemory.length = 0;
+  const rows = table.querySelectorAll('tbody tr');
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    cells[2].innerText = '';
+    cells[3].innerText = '';
+    cells[4].innerText = '';
+    cells[5].innerText = '';
+  });
+  alert("🔄 Reset Done! You can re-enter points now.");
+});
+
+document.getElementById('restoreButton').addEventListener('click', function() {
+  if (!confirm("⚠️ Are you sure you want to restore defaults and clear EVERYTHING?")) return;
+  teamMemory.length = 0;
+  const rows = table.querySelectorAll('tbody tr');
+  rows.forEach((row, index) => {
+    const cells = row.querySelectorAll('td');
+    cells[0].innerText = index + 1;
+    cells[1].innerText = '';
+    cells[2].innerText = '';
+    cells[3].innerText = '';
+    cells[4].innerText = '';
+    cells[5].innerText = '';
+  });
+  alert("🗑️ All data cleared! Ready for new fresh entry.");
+});
+</script>
+
+</body>
+</html>
