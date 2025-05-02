@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Free Fire Tournament Points Table</title>
+  <title>Free Fire Tournament Points Table (Fixed Version)</title>
   <style>
     body {
       display: flex;
@@ -109,6 +109,7 @@
 <script>
 const table = document.getElementById('pointsTable');
 let teamMemory = [];
+let finalCalculated = false; // ✅ New flag to prevent multiple finals
 
 function checkBooyahExists() {
   const rows = table.querySelectorAll('tbody tr');
@@ -199,7 +200,7 @@ function sortTable() {
   });
 
   rows.forEach((row, index) => {
-    row.querySelector('td').innerText = index + 1;
+    row.querySelector('td').innerText = index + 1; // Update Rank
     tbody.appendChild(row);
   });
 }
@@ -213,7 +214,11 @@ document.getElementById('nextButton').addEventListener('click', function() {
     const cells = row.querySelectorAll('td');
     const teamName = cells[1].innerText.trim();
     const total = parseInt(cells[5].innerText.trim()) || 0;
-    matchData.push({ teamName, total });
+    const booyah = parseInt(cells[2].innerText.trim()) || 0;
+    const kill = parseInt(cells[3].innerText.trim()) || 0;
+    if (teamName) {
+      matchData.push({ teamName, total, booyah, kill });
+    }
   });
 
   teamMemory.push(matchData);
@@ -226,41 +231,74 @@ document.getElementById('nextButton').addEventListener('click', function() {
     cells[5].innerText = '';
   });
 
+  finalCalculated = false; // ✅ Allow final to work again for new matches
   alert("✅ Data saved for this match. Now enter new match points.");
 });
 
+// ✅ Fixed FINAL BUTTON: sums only once, updates placement rank too!
 document.getElementById('finalButton').addEventListener('click', function() {
+  if (finalCalculated) {
+    alert("⚠️ Final already calculated! Click 'Next' and enter new matches before final again.");
+    return;
+  }
   if (!validateInputs()) return;
+
   const finalScores = {};
 
+  // Sum points from saved matches
   teamMemory.forEach(match => {
     match.forEach(team => {
       if (!finalScores[team.teamName]) {
-        finalScores[team.teamName] = 0;
+        finalScores[team.teamName] = { total: 0, kill: 0, booyah: 0 };
       }
-      finalScores[team.teamName] += team.total;
+      finalScores[team.teamName].total += team.total;
+      finalScores[team.teamName].kill += team.kill;
+      finalScores[team.teamName].booyah += team.booyah;
     });
   });
 
+  // Add current match points too
   const rows = table.querySelectorAll('tbody tr');
   rows.forEach(row => {
     const cells = row.querySelectorAll('td');
     const teamName = cells[1].innerText.trim();
-    if (teamName && finalScores[teamName] !== undefined) {
-      const average = Math.round(finalScores[teamName] / teamMemory.length);
-      cells[5].innerText = average;
+    const totalNow = parseInt(cells[5].innerText.trim()) || 0;
+    const booyahNow = parseInt(cells[2].innerText.trim()) || 0;
+    const killNow = parseInt(cells[3].innerText.trim()) || 0;
+    if (teamName) {
+      if (!finalScores[teamName]) {
+        finalScores[teamName] = { total: 0, kill: 0, booyah: 0 };
+      }
+      finalScores[teamName].total += totalNow;
+      finalScores[teamName].kill += killNow;
+      finalScores[teamName].booyah += booyahNow;
+    }
+  });
+
+  // Show summed totals
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    const teamName = cells[1].innerText.trim();
+    if (teamName && finalScores[teamName]) {
+      cells[2].innerText = finalScores[teamName].booyah;
+      cells[3].innerText = finalScores[teamName].kill;
+      cells[5].innerText = finalScores[teamName].total;
     } else {
+      cells[2].innerText = 0;
+      cells[3].innerText = 0;
       cells[5].innerText = 0;
     }
   });
 
-  sortTable();
-  alert("🏆 Final Result Calculated based on average points!");
+  sortTable(); // ✅ Updates placement rank properly
+  finalCalculated = true; // ✅ Prevent multiple finals
+  alert("🏆 Final Result Calculated (Total Points summed up)!");
 });
 
 document.getElementById('resetButton').addEventListener('click', function() {
   if (!confirm("Are you sure you want to reset all saved points but keep team names?")) return;
   teamMemory.length = 0;
+  finalCalculated = false;
   const rows = table.querySelectorAll('tbody tr');
   rows.forEach(row => {
     const cells = row.querySelectorAll('td');
@@ -275,6 +313,7 @@ document.getElementById('resetButton').addEventListener('click', function() {
 document.getElementById('restoreButton').addEventListener('click', function() {
   if (!confirm("⚠️ Are you sure you want to restore defaults and clear EVERYTHING?")) return;
   teamMemory.length = 0;
+  finalCalculated = false;
   const rows = table.querySelectorAll('tbody tr');
   rows.forEach((row, index) => {
     const cells = row.querySelectorAll('td');
