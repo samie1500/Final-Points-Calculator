@@ -2,318 +2,557 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Free Fire Tournament Points Table (With Placement Points)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Free Fire Tournament - Points Table</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
     body {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                  url('https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      background-color: #f5f5f5;
-      font-family: Arial, sans-serif;
     }
-    table {
-      border-collapse: collapse;
-      width: 85%;
-      max-width: 1100px;
-      background-color: #fff;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-      border-radius: 10px;
-      overflow: hidden;
+
+    .header {
       text-align: center;
-      margin-top: 20px;
+      margin-bottom: 30px;
+      width: 100%;
     }
-    th, td {
-      border: 1px solid #333;
-      padding: 10px;
+
+    .tournament-title {
+      font-size: 3.5rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 10px;
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+      color: #FFD700;
+      background: linear-gradient(to right, #FFD700, #FFA500, #FF8C00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    th {
-      background-color: #4CAF50;
-      color: white;
-      font-size: 18px;
+
+    .tournament-subtitle {
+      font-size: 1.2rem;
+      color: #FFA500;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
     }
-    tr:hover {
-      background-color: #f1f1f1;
-      transition: 0.3s;
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 30px;
+      width: 100%;
+      max-width: 900px;
     }
-    td {
+
+    .btn {
+      padding: 12px 25px;
       font-size: 16px;
-      color: #333;
-    }
-    td[contenteditable="true"] {
-      background-color: #fafafa;
-      cursor: text;
-    }
-    td[contenteditable="true"]:focus {
-      outline: 2px solid #4CAF50;
-    }
-    .button-group {
-      margin-top: 20px;
-    }
-    button {
-      margin: 8px 5px;
-      padding: 10px 18px;
-      font-size: 16px;
-      background-color: #4CAF50;
-      color: white;
+      font-weight: 600;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: background-color 0.3s;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
-    button:hover {
-      background-color: #45a049;
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4CAF50, #2E7D32);
+      color: white;
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #FF9800, #EF6C00);
+      color: white;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #F44336, #C62828);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #2196F3, #0D47A1);
+      color: white;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .table-container {
+      width: 100%;
+      max-width: 1200px;
+      background: rgba(10, 15, 30, 0.85);
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+    }
+
+    thead {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 140, 0, 0.9));
+    }
+
+    th {
+      padding: 18px 15px;
+      font-size: 18px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #1a1a2e;
+      border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    th:last-child {
+      border-right: none;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background 0.3s ease;
+    }
+
+    tbody tr:hover {
+      background: rgba(255, 215, 0, 0.1);
+    }
+
+    tbody tr:nth-child(even) {
+      background: rgba(30, 40, 70, 0.5);
+    }
+
+    tbody tr:nth-child(even):hover {
+      background: rgba(255, 215, 0, 0.15);
+    }
+
+    td {
+      padding: 15px 10px;
+      font-size: 16px;
+      font-weight: 500;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    td:last-child {
+      border-right: none;
+    }
+
+    .rank-cell {
+      font-weight: 700;
+      font-size: 18px;
+      color: #FFD700;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .team-name {
+      text-align: left;
+      padding-left: 20px;
+      font-weight: 600;
+    }
+
+    .total-cell {
+      font-weight: 700;
+      font-size: 18px;
+      color: #4CAF50;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    input {
+      width: 100%;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      color: white;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #FFD700;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      padding: 15px;
+      width: 100%;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 900;
+      color: #FFD700;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .table-container {
+        overflow-x: auto;
+      }
+      
+      table {
+        min-width: 800px;
+      }
+      
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+      }
+      
+      .tournament-title {
+        font-size: 2.5rem;
+      }
     }
   </style>
 </head>
-
 <body>
+  <div class="header">
+    <h1 class="tournament-title">Free Fire Tournament</h1>
+    <p class="tournament-subtitle">Official Points Table</p>
+    <div class="logo">PEC ESPORTS</div>
+  </div>
 
-<div class="button-group">
-  <button id="calculateButton">Calculate</button>
-  <button id="nextButton">Next</button>
-  <button id="finalButton">Final</button>
-  <button id="resetButton">Reset</button>
-  <button id="restoreButton">Restore Defaults</button>
-</div>
+  <div class="controls">
+    <button class="btn btn-primary" id="calculateButton">
+      <i class="fas fa-calculator"></i> Calculate
+    </button>
+    <button class="btn btn-secondary" id="nextButton">
+      <i class="fas fa-forward"></i> Next Match
+    </button>
+    <button class="btn btn-warning" id="finalButton">
+      <i class="fas fa-trophy"></i> Final Result
+    </button>
+    <button class="btn btn-danger" id="resetButton">
+      <i class="fas fa-redo"></i> Reset
+    </button>
+  </div>
 
-<table id="pointsTable">
-  <thead>
-    <tr>
-      <th>Rank</th>
-      <th>Team Name</th>
-      <th>Booyah</th>
-      <th>Kill</th>
-      <th>Placement Rank</th>
-      <th>Placement Points</th>
-      <th>Total</th>
-    </tr>
-  </thead>
-  <tbody>
-    <script>
-      for (let i = 1; i <= 12; i++) {
-        document.write('<tr>');
-        document.write(`<td>${i}</td>`);
-        document.write('<td contenteditable="true"></td>');
-        document.write('<td contenteditable="true"></td>');
-        document.write('<td contenteditable="true"></td>');
-        document.write('<td contenteditable="true"></td>');
-        document.write('<td></td>');
-        document.write('<td></td>');
-        document.write('</tr>');
-      }
-    </script>
-  </tbody>
-</table>
+  <div class="table-container">
+    <table id="pointsTable">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Team Name</th>
+          <th>Win</th>
+          <th>Kill Pts</th>
+          <th>Placement Rank</th>
+          <th>Placement Pts</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be generated by JavaScript -->
+      </tbody>
+    </table>
+  </div>
 
-<script>
-const table = document.getElementById('pointsTable');
-let teamMemory = [];
-let finalCalculated = false;
+  <div class="footer">
+    <p>Free Fire Tournament Points System | © 2025 PEC Esports</p>
+  </div>
 
-function checkBooyahExists() {
-  const rows = table.querySelectorAll('tbody tr');
-  for (let row of rows) {
-    const booyah = parseInt(row.querySelectorAll('td')[2].innerText.trim()) || 0;
-    if (booyah > 0) return true;
-  }
-  return false;
-}
-
-function validateInputs() {
-  const booyahExists = checkBooyahExists();
-  const rows = table.querySelectorAll('tbody tr');
-  for (let row of rows) {
-    const cells = row.querySelectorAll('td');
-    const teamName = cells[1].innerText.trim();
-    const booyah = cells[2].innerText.trim();
-    const kill = cells[3].innerText.trim();
-    const placement = cells[4].innerText.trim();
-
-    if (teamName !== "") {
-      if (booyah === "" && kill === "" && placement === "") {
-        alert("⚠️ Insufficient values entered!");
-        return false;
-      }
-      if (!booyahExists && placement === "") {
-        alert("⚠️ Placement rank required when no Booyah exists!");
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
-function calculateRowTotal(row) {
-  const cells = row.querySelectorAll('td');
-  let booyah = parseInt(cells[2].innerText.trim()) || 0;
-  let kill = parseInt(cells[3].innerText.trim()) || 0;
-  let placementRank = parseInt(cells[4].innerText.trim()) || 0;
-  let placementPoints = 0;
-
-  if (booyah > 0) {
-    placementPoints = 12;
-    cells[4].innerText = 1; // auto placement
-  } else {
-    switch (placementRank) {
-      case 1: placementPoints = 12; break;
-      case 2: placementPoints = 9; break;
-      case 3: placementPoints = 8; break;
-      case 4: placementPoints = 7; break;
-      case 5: placementPoints = 6; break;
-      case 6: placementPoints = 5; break;
-      case 7: placementPoints = 4; break;
-      case 8: placementPoints = 3; break;
-      case 9: placementPoints = 2; break;
-      case 10: placementPoints = 1; break;
-      default: placementPoints = 0;
-    }
-  }
-
-  cells[5].innerText = placementPoints;
-  cells[6].innerText = placementPoints + kill;
-}
-
-function realTimeUpdate() {
-  const rows = table.querySelectorAll('tbody tr');
-  rows.forEach(row => {
-    [2, 3, 4].forEach(i => row.querySelectorAll('td')[i].addEventListener('input', () => calculateRowTotal(row)));
-  });
-}
-realTimeUpdate();
-
-function sortTable() {
-  const tbody = table.querySelector('tbody');
-  const rows = Array.from(tbody.querySelectorAll('tr'));
-  rows.sort((a, b) => {
-    const aTotal = parseInt(a.querySelectorAll('td')[6].innerText) || 0;
-    const bTotal = parseInt(b.querySelectorAll('td')[6].innerText) || 0;
-    return bTotal - aTotal;
-  });
-  rows.forEach((row, index) => {
-    row.querySelector('td').innerText = index + 1;
-    tbody.appendChild(row);
-  });
-}
-
-document.getElementById('calculateButton').addEventListener('click', () => {
-  if (!validateInputs()) return;
-  sortTable();
-});
-
-document.getElementById('nextButton').addEventListener('click', () => {
-  if (!validateInputs()) return;
-  const rows = table.querySelectorAll('tbody tr');
-  const matchData = [];
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('td');
-    const teamName = cells[1].innerText.trim();
-    const booyah = parseInt(cells[2].innerText.trim()) || 0;
-    const kill = parseInt(cells[3].innerText.trim()) || 0;
-    const placementPoints = parseInt(cells[5].innerText.trim()) || 0;
-    if (teamName) matchData.push({ teamName, booyah, kill, placementPoints });
-  });
-  teamMemory.push(matchData);
-
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('td');
-    for (let i = 2; i <= 6; i++) cells[i].innerText = '';
-  });
-
-  finalCalculated = false;
-  alert("✅ Match saved! Enter next match data.");
-});
-
-// ✅ FIXED FINAL BUTTON: Only sums kills and placement points, not totals
-document.getElementById('finalButton').addEventListener('click', () => {
-  if (finalCalculated) {
-    alert("⚠️ Final already calculated!");
-    return;
-  }
-  if (!validateInputs()) return;
-
-  // First, save the current match data
-  const currentMatch = [];
-  const rows = table.querySelectorAll('tbody tr');
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('td');
-    const teamName = cells[1].innerText.trim();
-    const booyah = parseInt(cells[2].innerText.trim()) || 0;
-    const kill = parseInt(cells[3].innerText.trim()) || 0;
-    const placementPoints = parseInt(cells[5].innerText.trim()) || 0;
-    if (teamName) currentMatch.push({ teamName, booyah, kill, placementPoints });
-  });
-  
-  // Add current match to memory
-  teamMemory.push(currentMatch);
-
-  const finalScores = {};
-
-  // Sum only kills and placement points from ALL matches
-  teamMemory.forEach(match => {
-    match.forEach(team => {
-      if (!finalScores[team.teamName]) {
-        finalScores[team.teamName] = { 
-          totalKills: 0, 
-          totalPlacementPoints: 0,
-          totalBooyahs: 0
-        };
-      }
-      finalScores[team.teamName].totalKills += team.kill;
-      finalScores[team.teamName].totalPlacementPoints += team.placementPoints;
-      finalScores[team.teamName].totalBooyahs += team.booyah;
-    });
-  });
-
-  // Display final results (kills + placement points = total)
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('td');
-    const teamName = cells[1].innerText.trim();
+  <script>
+    // Initialize table with 12 teams
+    const table = document.getElementById('pointsTable');
+    const tbody = table.querySelector('tbody');
     
-    if (teamName && finalScores[teamName]) {
-      const fs = finalScores[teamName];
-      cells[2].innerText = fs.totalBooyahs;
-      cells[3].innerText = fs.totalKills;
-      cells[5].innerText = fs.totalPlacementPoints;
-      // Total = kills + placement points (simple addition)
-      cells[6].innerText = fs.totalKills + fs.totalPlacementPoints;
-    } else {
-      cells[2].innerText = 0;
-      cells[3].innerText = 0;
-      cells[5].innerText = 0;
-      cells[6].innerText = 0;
+    for (let i = 1; i <= 12; i++) {
+      const row = document.createElement('tr');
+      
+      // Rank cell
+      const rankCell = document.createElement('td');
+      rankCell.className = 'rank-cell';
+      rankCell.textContent = i;
+      
+      // Team Name cell (editable)
+      const teamCell = document.createElement('td');
+      teamCell.className = 'team-name';
+      teamCell.contentEditable = true;
+      
+      // Win cell (editable)
+      const winCell = document.createElement('td');
+      winCell.contentEditable = true;
+      
+      // Kill Points cell (editable)
+      const killCell = document.createElement('td');
+      killCell.contentEditable = true;
+      
+      // Placement Rank cell (editable)
+      const placementRankCell = document.createElement('td');
+      placementRankCell.contentEditable = true;
+      
+      // Placement Points cell (calculated)
+      const placementPointsCell = document.createElement('td');
+      
+      // Total Points cell (calculated)
+      const totalCell = document.createElement('td');
+      totalCell.className = 'total-cell';
+      
+      // Append all cells to the row
+      row.appendChild(rankCell);
+      row.appendChild(teamCell);
+      row.appendChild(winCell);
+      row.appendChild(killCell);
+      row.appendChild(placementRankCell);
+      row.appendChild(placementPointsCell);
+      row.appendChild(totalCell);
+      
+      // Append row to table body
+      tbody.appendChild(row);
     }
-  });
 
-  sortTable();
-  finalCalculated = true;
-  alert("🏆 Final Result Calculated! (Total = Kills + Placement Points)");
-});
+    // Application logic
+    let teamMemory = [];
+    let finalCalculated = false;
 
-document.getElementById('resetButton').addEventListener('click', () => {
-  if (!confirm("Reset all points but keep team names?")) return;
-  teamMemory = [];
-  finalCalculated = false;
-  const rows = table.querySelectorAll('tbody tr');
-  rows.forEach(row => {
-    const cells = row.querySelectorAll('td');
-    for (let i = 2; i <= 6; i++) cells[i].innerText = '';
-  });
-});
+    function checkBooyahExists() {
+      const rows = table.querySelectorAll('tbody tr');
+      for (let row of rows) {
+        const winCell = row.querySelectorAll('td')[2];
+        const win = parseInt(winCell.textContent.trim()) || 0;
+        if (win > 0) return true;
+      }
+      return false;
+    }
 
-document.getElementById('restoreButton').addEventListener('click', () => {
-  if (!confirm("⚠️ Restore default table (clear all data)?")) return;
-  teamMemory = [];
-  finalCalculated = false;
-  const rows = table.querySelectorAll('tbody tr');
-  rows.forEach((row, i) => {
-    const cells = row.querySelectorAll('td');
-    cells[0].innerText = i + 1;
-    for (let j = 1; j <= 6; j++) cells[j].innerText = '';
-  });
-});
-</script>
+    function validateInputs() {
+      const booyahExists = checkBooyahExists();
+      const rows = table.querySelectorAll('tbody tr');
+
+      for (let row of rows) {
+        const cells = row.querySelectorAll('td');
+        const teamName = cells[1].textContent.trim();
+        const win = cells[2].textContent.trim();
+        const kill = cells[3].textContent.trim();
+        const placement = cells[4].textContent.trim();
+
+        if (teamName !== "") {
+          if (win === "" && kill === "" && placement === "") {
+            alert("⚠️ Insufficient values entered!");
+            return false;
+          }
+          if (!booyahExists && placement === "") {
+            alert("⚠️ Placement rank required when no team has a win!");
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+
+    function calculateRowTotal(row) {
+      const cells = row.querySelectorAll('td');
+      let win = parseInt(cells[2].textContent.trim()) || 0;
+      let kill = parseInt(cells[3].textContent.trim()) || 0;
+      let placementRank = parseInt(cells[4].textContent.trim()) || 0;
+      let placementPoints = 0;
+
+      if (win > 0) {
+        placementPoints = 12;
+        cells[4].textContent = 1; // auto placement
+      } else {
+        switch (placementRank) {
+          case 1: placementPoints = 12; break;
+          case 2: placementPoints = 9; break;
+          case 3: placementPoints = 8; break;
+          case 4: placementPoints = 7; break;
+          case 5: placementPoints = 6; break;
+          case 6: placementPoints = 5; break;
+          case 7: placementPoints = 4; break;
+          case 8: placementPoints = 3; break;
+          case 9: placementPoints = 2; break;
+          case 10: placementPoints = 1; break;
+          default: placementPoints = 0;
+        }
+      }
+
+      cells[5].textContent = placementPoints;
+      cells[6].textContent = placementPoints + kill;
+    }
+
+    function realTimeUpdate() {
+      const rows = table.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        // Add event listeners to Win, Kill, and Placement Rank cells
+        cells[2].addEventListener('input', () => calculateRowTotal(row));
+        cells[3].addEventListener('input', () => calculateRowTotal(row));
+        cells[4].addEventListener('input', () => calculateRowTotal(row));
+      });
+    }
+
+    // Initialize real-time updates
+    realTimeUpdate();
+
+    function sortTable() {
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+
+      rows.sort((a, b) => {
+        const aTotal = parseInt(a.querySelectorAll('td')[6].textContent) || 0;
+        const bTotal = parseInt(b.querySelectorAll('td')[6].textContent) || 0;
+        return bTotal - aTotal;
+      });
+
+      rows.forEach((row, index) => {
+        row.querySelector('.rank-cell').textContent = index + 1;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Button event listeners
+    document.getElementById('calculateButton').addEventListener('click', () => {
+      if (!validateInputs()) return;
+      sortTable();
+    });
+
+    document.getElementById('nextButton').addEventListener('click', () => {
+      if (!validateInputs()) return;
+      
+      const rows = table.querySelectorAll('tbody tr');
+      const matchData = [];
+      
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        const teamName = cells[1].textContent.trim();
+        const win = parseInt(cells[2].textContent.trim()) || 0;
+        const kill = parseInt(cells[3].textContent.trim()) || 0;
+        const placementPoints = parseInt(cells[5].textContent.trim()) || 0;
+        
+        if (teamName) {
+          matchData.push({ teamName, win, kill, placementPoints });
+        }
+      });
+      
+      teamMemory.push(matchData);
+
+      // Clear input fields for next match
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        for (let i = 2; i <= 6; i++) cells[i].textContent = '';
+      });
+
+      finalCalculated = false;
+      alert("✅ Match data saved! Enter next match data.");
+    });
+
+    document.getElementById('finalButton').addEventListener('click', () => {
+      if (finalCalculated) {
+        alert("⚠️ Final results already calculated!");
+        return;
+      }
+      if (!validateInputs()) return;
+
+      // Save current match data
+      const currentMatch = [];
+      const rows = table.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        const teamName = cells[1].textContent.trim();
+        const win = parseInt(cells[2].textContent.trim()) || 0;
+        const kill = parseInt(cells[3].textContent.trim()) || 0;
+        const placementPoints = parseInt(cells[5].textContent.trim()) || 0;
+        
+        if (teamName) {
+          currentMatch.push({ teamName, win, kill, placementPoints });
+        }
+      });
+      
+      // Add current match to memory
+      teamMemory.push(currentMatch);
+
+      const finalScores = {};
+
+      // Calculate final scores from all matches
+      teamMemory.forEach(match => {
+        match.forEach(team => {
+          if (!finalScores[team.teamName]) {
+            finalScores[team.teamName] = { 
+              totalKills: 0, 
+              totalPlacementPoints: 0,
+              totalWins: 0
+            };
+          }
+          finalScores[team.teamName].totalKills += team.kill;
+          finalScores[team.teamName].totalPlacementPoints += team.placementPoints;
+          finalScores[team.teamName].totalWins += team.win;
+        });
+      });
+
+      // Display final results
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        const teamName = cells[1].textContent.trim();
+        
+        if (teamName && finalScores[teamName]) {
+          const fs = finalScores[teamName];
+          cells[2].textContent = fs.totalWins;
+          cells[3].textContent = fs.totalKills;
+          cells[5].textContent = fs.totalPlacementPoints;
+          cells[6].textContent = fs.totalKills + fs.totalPlacementPoints;
+        } else {
+          cells[2].textContent = 0;
+          cells[3].textContent = 0;
+          cells[5].textContent = 0;
+          cells[6].textContent = 0;
+        }
+      });
+
+      sortTable();
+      finalCalculated = true;
+      alert("🏆 Final tournament results calculated!");
+    });
+
+    document.getElementById('resetButton').addEventListener('click', () => {
+      if (!confirm("Reset all points but keep team names?")) return;
+      teamMemory = [];
+      finalCalculated = false;
+      const rows = table.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        for (let i = 2; i <= 6; i++) cells[i].textContent = '';
+      });
+    });
+  </script>
 </body>
 </html>
