@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Free Fire Tournament Points Table (Fixed Version)</title>
+  <title>Free Fire Tournament Points Table (With Placement Points)</title>
   <style>
     body {
       display: flex;
@@ -15,8 +15,8 @@
     }
     table {
       border-collapse: collapse;
-      width: 80%;
-      max-width: 1000px;
+      width: 85%;
+      max-width: 1100px;
       background-color: #fff;
       box-shadow: 0 8px 16px rgba(0,0,0,0.2);
       border-radius: 10px;
@@ -86,20 +86,22 @@
       <th>Team Name</th>
       <th>Booyah</th>
       <th>Kill</th>
+      <th>Placement Rank</th>
       <th>Placement Points</th>
       <th>Total</th>
     </tr>
   </thead>
   <tbody>
     <script>
-      for(let i=1;i<=12;i++){
+      for (let i = 1; i <= 12; i++) {
         document.write('<tr>');
         document.write(`<td>${i}</td>`);
         document.write('<td contenteditable="true"></td>');
         document.write('<td contenteditable="true"></td>');
         document.write('<td contenteditable="true"></td>');
         document.write('<td contenteditable="true"></td>');
-        document.write('<td contenteditable="true"></td>');
+        document.write('<td></td>');
+        document.write('<td></td>');
         document.write('</tr>');
       }
     </script>
@@ -109,7 +111,7 @@
 <script>
 const table = document.getElementById('pointsTable');
 let teamMemory = [];
-let finalCalculated = false; // ✅ New flag to prevent multiple finals
+let finalCalculated = false;
 
 function checkBooyahExists() {
   const rows = table.querySelectorAll('tbody tr');
@@ -123,7 +125,6 @@ function checkBooyahExists() {
 function validateInputs() {
   const booyahExists = checkBooyahExists();
   const rows = table.querySelectorAll('tbody tr');
-
   for (let row of rows) {
     const cells = row.querySelectorAll('td');
     const teamName = cells[1].innerText.trim();
@@ -136,7 +137,7 @@ function validateInputs() {
         alert("⚠️ Insufficient values entered!");
         return false;
       }
-      if (!booyahExists && (placement === "")) {
+      if (!booyahExists && placement === "") {
         alert("⚠️ Placement rank required when no Booyah exists!");
         return false;
       }
@@ -149,185 +150,170 @@ function calculateRowTotal(row) {
   const cells = row.querySelectorAll('td');
   let booyah = parseInt(cells[2].innerText.trim()) || 0;
   let kill = parseInt(cells[3].innerText.trim()) || 0;
-  let placement = parseInt(cells[4].innerText.trim()) || 0;
-  let total = 0;
+  let placementRank = parseInt(cells[4].innerText.trim()) || 0;
+  let placementPoints = 0;
 
   if (booyah > 0) {
-    total += booyah * 12;
-    cells[4].innerText = 1; // Force placement 1
+    placementPoints = 12;
+    cells[4].innerText = 1; // auto placement
   } else {
-    let placementPoints = 0;
-    if (placement === 1) placementPoints = 12;
-    else if (placement === 2) placementPoints = 9;
-    else if (placement === 3) placementPoints = 8;
-    else if (placement === 4) placementPoints = 7;
-    else if (placement === 5) placementPoints = 6;
-    else if (placement === 6) placementPoints = 5;
-    else if (placement === 7) placementPoints = 4;
-    else if (placement === 8) placementPoints = 3;
-    else if (placement === 9) placementPoints = 2;
-    else if (placement === 10) placementPoints = 1;
-    total += placementPoints;
+    switch (placementRank) {
+      case 1: placementPoints = 12; break;
+      case 2: placementPoints = 9; break;
+      case 3: placementPoints = 8; break;
+      case 4: placementPoints = 7; break;
+      case 5: placementPoints = 6; break;
+      case 6: placementPoints = 5; break;
+      case 7: placementPoints = 4; break;
+      case 8: placementPoints = 3; break;
+      case 9: placementPoints = 2; break;
+      case 10: placementPoints = 1; break;
+      default: placementPoints = 0;
+    }
   }
-  total += kill;
-  cells[5].innerText = total;
+
+  cells[5].innerText = placementPoints;
+  cells[6].innerText = placementPoints + kill;
 }
 
 function realTimeUpdate() {
   const rows = table.querySelectorAll('tbody tr');
   rows.forEach(row => {
-    row.querySelectorAll('td')[2].addEventListener('input', () => calculateRowTotal(row));
-    row.querySelectorAll('td')[3].addEventListener('input', () => calculateRowTotal(row));
-    row.querySelectorAll('td')[4].addEventListener('input', () => calculateRowTotal(row));
+    [2, 3, 4].forEach(i => row.querySelectorAll('td')[i].addEventListener('input', () => calculateRowTotal(row)));
   });
 }
-
 realTimeUpdate();
-
-document.getElementById('calculateButton').addEventListener('click', function() {
-  if (!validateInputs()) return;
-  sortTable();
-});
 
 function sortTable() {
   const tbody = table.querySelector('tbody');
   const rows = Array.from(tbody.querySelectorAll('tr'));
-
   rows.sort((a, b) => {
-    const aTotal = parseInt(a.querySelectorAll('td')[5].innerText) || 0;
-    const bTotal = parseInt(b.querySelectorAll('td')[5].innerText) || 0;
+    const aTotal = parseInt(a.querySelectorAll('td')[6].innerText) || 0;
+    const bTotal = parseInt(b.querySelectorAll('td')[6].innerText) || 0;
     return bTotal - aTotal;
   });
-
   rows.forEach((row, index) => {
-    row.querySelector('td').innerText = index + 1; // Update Rank
+    row.querySelector('td').innerText = index + 1;
     tbody.appendChild(row);
   });
 }
 
-document.getElementById('nextButton').addEventListener('click', function() {
+document.getElementById('calculateButton').addEventListener('click', () => {
+  if (!validateInputs()) return;
+  sortTable();
+});
+
+document.getElementById('nextButton').addEventListener('click', () => {
   if (!validateInputs()) return;
   const rows = table.querySelectorAll('tbody tr');
   const matchData = [];
-
   rows.forEach(row => {
     const cells = row.querySelectorAll('td');
     const teamName = cells[1].innerText.trim();
-    const total = parseInt(cells[5].innerText.trim()) || 0;
     const booyah = parseInt(cells[2].innerText.trim()) || 0;
     const kill = parseInt(cells[3].innerText.trim()) || 0;
-    if (teamName) {
-      matchData.push({ teamName, total, booyah, kill });
-    }
+    const placementPoints = parseInt(cells[5].innerText.trim()) || 0;
+    if (teamName) matchData.push({ teamName, booyah, kill, placementPoints });
   });
-
   teamMemory.push(matchData);
 
   rows.forEach(row => {
     const cells = row.querySelectorAll('td');
-    cells[2].innerText = '';
-    cells[3].innerText = '';
-    cells[4].innerText = '';
-    cells[5].innerText = '';
+    for (let i = 2; i <= 6; i++) cells[i].innerText = '';
   });
 
-  finalCalculated = false; // ✅ Allow final to work again for new matches
-  alert("✅ Data saved for this match. Now enter new match points.");
+  finalCalculated = false;
+  alert("✅ Match saved! Enter next match data.");
 });
 
-// ✅ Fixed FINAL BUTTON: sums only once, updates placement rank too!
-document.getElementById('finalButton').addEventListener('click', function() {
+// ✅ FIXED FINAL BUTTON: Only sums kills and placement points, not totals
+document.getElementById('finalButton').addEventListener('click', () => {
   if (finalCalculated) {
-    alert("⚠️ Final already calculated! Click 'Next' and enter new matches before final again.");
+    alert("⚠️ Final already calculated!");
     return;
   }
   if (!validateInputs()) return;
 
-  const finalScores = {};
-
-  // Sum points from saved matches
-  teamMemory.forEach(match => {
-    match.forEach(team => {
-      if (!finalScores[team.teamName]) {
-        finalScores[team.teamName] = { total: 0, kill: 0, booyah: 0 };
-      }
-      finalScores[team.teamName].total += team.total;
-      finalScores[team.teamName].kill += team.kill;
-      finalScores[team.teamName].booyah += team.booyah;
-    });
-  });
-
-  // Add current match points too
+  // First, save the current match data
+  const currentMatch = [];
   const rows = table.querySelectorAll('tbody tr');
   rows.forEach(row => {
     const cells = row.querySelectorAll('td');
     const teamName = cells[1].innerText.trim();
-    const totalNow = parseInt(cells[5].innerText.trim()) || 0;
-    const booyahNow = parseInt(cells[2].innerText.trim()) || 0;
-    const killNow = parseInt(cells[3].innerText.trim()) || 0;
-    if (teamName) {
-      if (!finalScores[teamName]) {
-        finalScores[teamName] = { total: 0, kill: 0, booyah: 0 };
+    const booyah = parseInt(cells[2].innerText.trim()) || 0;
+    const kill = parseInt(cells[3].innerText.trim()) || 0;
+    const placementPoints = parseInt(cells[5].innerText.trim()) || 0;
+    if (teamName) currentMatch.push({ teamName, booyah, kill, placementPoints });
+  });
+  
+  // Add current match to memory
+  teamMemory.push(currentMatch);
+
+  const finalScores = {};
+
+  // Sum only kills and placement points from ALL matches
+  teamMemory.forEach(match => {
+    match.forEach(team => {
+      if (!finalScores[team.teamName]) {
+        finalScores[team.teamName] = { 
+          totalKills: 0, 
+          totalPlacementPoints: 0,
+          totalBooyahs: 0
+        };
       }
-      finalScores[teamName].total += totalNow;
-      finalScores[teamName].kill += killNow;
-      finalScores[teamName].booyah += booyahNow;
-    }
+      finalScores[team.teamName].totalKills += team.kill;
+      finalScores[team.teamName].totalPlacementPoints += team.placementPoints;
+      finalScores[team.teamName].totalBooyahs += team.booyah;
+    });
   });
 
-  // Show summed totals
+  // Display final results (kills + placement points = total)
   rows.forEach(row => {
     const cells = row.querySelectorAll('td');
     const teamName = cells[1].innerText.trim();
+    
     if (teamName && finalScores[teamName]) {
-      cells[2].innerText = finalScores[teamName].booyah;
-      cells[3].innerText = finalScores[teamName].kill;
-      cells[5].innerText = finalScores[teamName].total;
+      const fs = finalScores[teamName];
+      cells[2].innerText = fs.totalBooyahs;
+      cells[3].innerText = fs.totalKills;
+      cells[5].innerText = fs.totalPlacementPoints;
+      // Total = kills + placement points (simple addition)
+      cells[6].innerText = fs.totalKills + fs.totalPlacementPoints;
     } else {
       cells[2].innerText = 0;
       cells[3].innerText = 0;
       cells[5].innerText = 0;
+      cells[6].innerText = 0;
     }
   });
 
-  sortTable(); // ✅ Updates placement rank properly
-  finalCalculated = true; // ✅ Prevent multiple finals
-  alert("🏆 Final Result Calculated (Total Points summed up)!");
+  sortTable();
+  finalCalculated = true;
+  alert("🏆 Final Result Calculated! (Total = Kills + Placement Points)");
 });
 
-document.getElementById('resetButton').addEventListener('click', function() {
-  if (!confirm("Are you sure you want to reset all saved points but keep team names?")) return;
-  teamMemory.length = 0;
+document.getElementById('resetButton').addEventListener('click', () => {
+  if (!confirm("Reset all points but keep team names?")) return;
+  teamMemory = [];
   finalCalculated = false;
   const rows = table.querySelectorAll('tbody tr');
   rows.forEach(row => {
     const cells = row.querySelectorAll('td');
-    cells[2].innerText = '';
-    cells[3].innerText = '';
-    cells[4].innerText = '';
-    cells[5].innerText = '';
+    for (let i = 2; i <= 6; i++) cells[i].innerText = '';
   });
-  alert("🔄 Reset Done! You can re-enter points now.");
 });
 
-document.getElementById('restoreButton').addEventListener('click', function() {
-  if (!confirm("⚠️ Are you sure you want to restore defaults and clear EVERYTHING?")) return;
-  teamMemory.length = 0;
+document.getElementById('restoreButton').addEventListener('click', () => {
+  if (!confirm("⚠️ Restore default table (clear all data)?")) return;
+  teamMemory = [];
   finalCalculated = false;
   const rows = table.querySelectorAll('tbody tr');
-  rows.forEach((row, index) => {
+  rows.forEach((row, i) => {
     const cells = row.querySelectorAll('td');
-    cells[0].innerText = index + 1;
-    cells[1].innerText = '';
-    cells[2].innerText = '';
-    cells[3].innerText = '';
-    cells[4].innerText = '';
-    cells[5].innerText = '';
+    cells[0].innerText = i + 1;
+    for (let j = 1; j <= 6; j++) cells[j].innerText = '';
   });
-  alert("🗑️ All data cleared! Ready for new fresh entry.");
 });
 </script>
-
 </body>
 </html>
-
