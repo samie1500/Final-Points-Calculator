@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Free Fire Tournament - Points Table</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -31,24 +32,97 @@
       width: 100%;
     }
 
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .tournament-logo {
+      height: 100px;
+      width: auto;
+      border-radius: 15px;
+      box-shadow: 
+        0 0 30px rgba(255, 215, 0, 0.6),
+        0 0 60px rgba(255, 140, 0, 0.4),
+        0 0 90px rgba(255, 69, 0, 0.2);
+      border: 3px solid #FFD700;
+      filter: brightness(1.1) contrast(1.1);
+      transition: all 0.3s ease;
+    }
+
+    .tournament-logo:hover {
+      transform: scale(1.05);
+      box-shadow: 
+        0 0 40px rgba(255, 215, 0, 0.8),
+        0 0 80px rgba(255, 140, 0, 0.6),
+        0 0 120px rgba(255, 69, 0, 0.4);
+    }
+
     .tournament-title {
-      font-size: 3.5rem;
+      font-size: 4rem;
       font-weight: 900;
       text-transform: uppercase;
-      letter-spacing: 3px;
+      letter-spacing: 4px;
       margin-bottom: 10px;
-      text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+      text-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.8),
+        0 0 40px rgba(255, 140, 0, 0.6),
+        0 0 60px rgba(255, 69, 0, 0.4);
       color: #FFD700;
-      background: linear-gradient(to right, #FFD700, #FFA500, #FF8C00);
+      background: linear-gradient(45deg, #FFD700, #FFA500, #FF8C00, #FF6347);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 
+          0 0 20px rgba(255, 215, 0, 0.8),
+          0 0 40px rgba(255, 140, 0, 0.6),
+          0 0 60px rgba(255, 69, 0, 0.4);
+      }
+      to {
+        text-shadow: 
+          0 0 30px rgba(255, 215, 0, 1),
+          0 0 60px rgba(255, 140, 0, 0.8),
+          0 0 90px rgba(255, 69, 0, 0.6);
+      }
     }
 
     .tournament-subtitle {
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       color: #FFA500;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px rgba(255, 165, 0, 0.7);
+      font-weight: 600;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 20px;
+      border-radius: 25px;
+      display: inline-block;
+      backdrop-filter: blur(5px);
+    }
+
+    .pec-brand {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #FFD700;
+      text-shadow: 
+        0 0 15px rgba(255, 215, 0, 0.7),
+        0 0 30px rgba(255, 140, 0, 0.5);
+      background: linear-gradient(45deg, #FFD700, #FF8C00, #FF4500);
+      -webkit-background-clip: text;
       letter-spacing: 2px;
+      margin-top: 10px;
+      padding: 10px 30px;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      border-radius: 50px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
     }
 
     .controls {
@@ -92,6 +166,11 @@
 
     .btn-secondary {
       background: linear-gradient(135deg, #2196F3, #0D47A1);
+      color: white;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #9C27B0, #6A1B9A);
       color: white;
     }
 
@@ -213,11 +292,114 @@
       width: 100%;
     }
 
-    .logo {
-      font-size: 24px;
-      font-weight: 900;
+    /* Download container styles */
+    #downloadContainer {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(10, 15, 30, 0.95);
+      padding: 30px;
+      border-radius: 15px;
+      border: 3px solid #FFD700;
+      box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+      z-index: 1000;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    #downloadPreview {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      padding: 30px;
+      border-radius: 15px;
+      border: 2px solid #FFD700;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    #downloadTable {
+      background: white;
+      color: black;
+      border-collapse: collapse;
+      width: 100%;
+      margin: 20px 0;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    #downloadTable th {
+      background: linear-gradient(135deg, #FFD700, #FF8C00);
+      color: #1a1a2e;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    #downloadTable td {
+      padding: 12px;
+      border: 1px solid #ddd;
+      color: #333;
+      font-weight: 500;
+    }
+
+    #downloadTable .rank-cell {
+      background: #fff9e6;
+      color: #FF8C00;
+      font-weight: bold;
+    }
+
+    #downloadTable .total-cell {
+      background: #e8f5e8;
+      color: #2E7D32;
+      font-weight: bold;
+    }
+
+    .download-header {
+      text-align: center;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .download-logo {
+      height: 80px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+      border: 2px solid #FFD700;
+      margin-bottom: 15px;
+    }
+
+    .download-title {
       color: #FFD700;
-      margin-bottom: 10px;
+      font-size: 2.5rem;
+      font-weight: 900;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      margin: 10px 0;
+    }
+
+    .download-subtitle {
+      color: #FFA500;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 5px 0;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 5px 15px;
+      border-radius: 20px;
+    }
+
+    .download-brand {
+      color: #FFD700;
+      font-size: 1.8rem;
+      font-weight: 800;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+      margin: 10px 0;
+      padding: 8px 20px;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 30px;
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.3);
     }
 
     @media (max-width: 768px) {
@@ -248,9 +430,12 @@
 </head>
 <body>
   <div class="header">
+    <div class="logo-container">
+      <img src="https://i.ibb.co/JRZzccKb/image.jpg" alt="PRIDE ESPORTS COMMUNITY" class="tournament-logo">
+    </div>
     <h1 class="tournament-title">Free Fire Tournament</h1>
-    <p class="tournament-subtitle">Official Points Table</p>
-    <div class="logo">PEC ESPORTS</div>
+    <p class="tournament-subtitle">OFFICIAL POINTS TABLE</p>
+    <div class="pec-brand">PRIDE ESPORTS COMMUNITY</div>
   </div>
 
   <div class="controls">
@@ -265,6 +450,9 @@
     </button>
     <button class="btn btn-danger" id="resetButton">
       <i class="fas fa-redo"></i> Reset
+    </button>
+    <button class="btn btn-success" id="downloadButton">
+      <i class="fas fa-download"></i> Download Result
     </button>
   </div>
 
@@ -288,7 +476,42 @@
   </div>
 
   <div class="footer">
-    <p>Free Fire Tournament Points System | © 2025 PEC Esports</p>
+    <p>Free Fire Tournament Points System | © 2025 PRIDE ESPORTS COMMUNITY</p>
+  </div>
+
+  <!-- Download Container (hidden by default) -->
+  <div id="downloadContainer">
+    <div id="downloadPreview">
+      <div class="download-header">
+        <img src="https://i.ibb.co/JRZzccKb/image.jpg" alt="PRIDE ESPORTS COMMUNITY" class="download-logo">
+        <div class="download-brand">PRIDE ESPORTS COMMUNITY</div>
+        <h2 class="download-title">FREE FIRE TOURNAMENT</h2>
+        <h3 class="download-subtitle">OVERALL STANDINGS</h3>
+      </div>
+      <table id="downloadTable">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Team Name</th>
+            <th>Wins</th>
+            <th>Kills</th>
+            <th>Placement Pts</th>
+            <th>Total Pts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Download table content will be generated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top: 20px;">
+      <button class="btn btn-success" id="saveImageBtn" style="margin: 5px;">
+        <i class="fas fa-download"></i> Save as PNG
+      </button>
+      <button class="btn btn-danger" id="closeDownloadBtn" style="margin: 5px;">
+        <i class="fas fa-times"></i> Close
+      </button>
+    </div>
   </div>
 
   <script>
@@ -388,7 +611,8 @@
       let placementPoints = 0;
 
       if (win > 0) {
-        placementPoints = 12;
+        // FIX: Multiply placement points by number of wins
+        placementPoints = win * 12;
         cells[4].textContent = 1; // auto placement
       } else {
         switch (placementRank) {
@@ -457,10 +681,17 @@
         const teamName = cells[1].textContent.trim();
         const win = parseInt(cells[2].textContent.trim()) || 0;
         const kill = parseInt(cells[3].textContent.trim()) || 0;
+        const placementRank = parseInt(cells[4].textContent.trim()) || 0;
         const placementPoints = parseInt(cells[5].textContent.trim()) || 0;
         
         if (teamName) {
-          matchData.push({ teamName, win, kill, placementPoints });
+          matchData.push({ 
+            teamName, 
+            win, 
+            kill, 
+            placementRank,
+            placementPoints 
+          });
         }
       });
       
@@ -491,67 +722,302 @@
         const teamName = cells[1].textContent.trim();
         const win = parseInt(cells[2].textContent.trim()) || 0;
         const kill = parseInt(cells[3].textContent.trim()) || 0;
+        const placementRank = parseInt(cells[4].textContent.trim()) || 0;
         const placementPoints = parseInt(cells[5].textContent.trim()) || 0;
         
         if (teamName) {
-          currentMatch.push({ teamName, win, kill, placementPoints });
+          currentMatch.push({ 
+            teamName, 
+            win, 
+            kill, 
+            placementRank,
+            placementPoints 
+          });
         }
       });
       
       // Add current match to memory
       teamMemory.push(currentMatch);
 
-      const finalScores = {};
+      // Enhanced data structure for tie-breaker
+      const teamStats = {};
 
-      // Calculate final scores from all matches
+      // Calculate final scores from all matches with tie-breaker data
       teamMemory.forEach(match => {
         match.forEach(team => {
-          if (!finalScores[team.teamName]) {
-            finalScores[team.teamName] = { 
+          if (!teamStats[team.teamName]) {
+            teamStats[team.teamName] = { 
               totalKills: 0, 
               totalPlacementPoints: 0,
-              totalWins: 0
+              totalWins: 0,
+              placementRanks: [], // Store all placement ranks for tie-breaking
+              totalPoints: 0
             };
           }
-          finalScores[team.teamName].totalKills += team.kill;
-          finalScores[team.teamName].totalPlacementPoints += team.placementPoints;
-          finalScores[team.teamName].totalWins += team.win;
+          
+          teamStats[team.teamName].totalKills += team.kill;
+          teamStats[team.teamName].totalPlacementPoints += team.placementPoints;
+          teamStats[team.teamName].totalWins += team.win;
+          teamStats[team.teamName].totalPoints += team.kill + team.placementPoints;
+          
+          // Store placement ranks for tie-breaking (only if not a win)
+          if (team.win === 0 && team.placementRank > 0) {
+            teamStats[team.teamName].placementRanks.push(team.placementRank);
+          } else if (team.win > 0) {
+            // For each win, add a rank 1 placement
+            for (let i = 0; i < team.win; i++) {
+              teamStats[team.teamName].placementRanks.push(1); // Each win = Rank 1
+            }
+          }
         });
       });
 
-      // Display final results
-      rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        const teamName = cells[1].textContent.trim();
-        
-        if (teamName && finalScores[teamName]) {
-          const fs = finalScores[teamName];
-          cells[2].textContent = fs.totalWins;
-          cells[3].textContent = fs.totalKills;
-          cells[5].textContent = fs.totalPlacementPoints;
-          cells[6].textContent = fs.totalKills + fs.totalPlacementPoints;
-        } else {
-          cells[2].textContent = 0;
-          cells[3].textContent = 0;
-          cells[5].textContent = 0;
-          cells[6].textContent = 0;
+      // Prepare teams for sorting with tie-breaker
+      const teamsData = [];
+      for (const teamName in teamStats) {
+        teamsData.push({
+          teamName: teamName,
+          totalPoints: teamStats[teamName].totalPoints,
+          totalKills: teamStats[teamName].totalKills,
+          totalWins: teamStats[teamName].totalWins,
+          placementRanks: teamStats[teamName].placementRanks.sort((a, b) => a - b) // Sort ranks ascending (lower is better)
+        });
+      }
+
+      // Sort with tie-breaker logic
+      teamsData.sort((a, b) => {
+        // Primary sort: Total Points (descending)
+        if (b.totalPoints !== a.totalPoints) {
+          return b.totalPoints - a.totalPoints;
         }
+        
+        // TIE-BREAKER 1: Compare placement ranks (better placements win)
+        // Sort both teams' placement ranks in ascending order
+        const aRanks = [...a.placementRanks].sort((x, y) => x - y);
+        const bRanks = [...b.placementRanks].sort((x, y) => x - y);
+        
+        // Compare placement by placement (lower rank is better)
+        const minLength = Math.min(aRanks.length, bRanks.length);
+        for (let i = 0; i < minLength; i++) {
+          if (aRanks[i] !== bRanks[i]) {
+            return aRanks[i] - bRanks[i]; // Lower placement rank wins
+          }
+        }
+        
+        // If all compared placements are equal, team with more placements wins
+        if (aRanks.length !== bRanks.length) {
+          return bRanks.length - aRanks.length; // More placements is better
+        }
+        
+        // TIE-BREAKER 2: Total Kills (higher kills win)
+        if (b.totalKills !== a.totalKills) {
+          return b.totalKills - a.totalKills;
+        }
+        
+        // If still tied, maintain original order
+        return 0;
       });
 
-      sortTable();
+      // Clear and rebuild table with sorted results
+      const tbody = table.querySelector('tbody');
+      const currentRows = Array.from(tbody.querySelectorAll('tr'));
+      
+      // Remove existing rows
+      currentRows.forEach(row => tbody.removeChild(row));
+      
+      // Create new rows in sorted order
+      teamsData.forEach((team, index) => {
+        const newRow = document.createElement('tr');
+        
+        // Rank cell - shows final tournament ranking
+        const rankCell = document.createElement('td');
+        rankCell.className = 'rank-cell';
+        rankCell.textContent = index + 1;
+        newRow.appendChild(rankCell);
+        
+        // Team Name cell
+        const teamCell = document.createElement('td');
+        teamCell.className = 'team-name';
+        teamCell.textContent = team.teamName;
+        newRow.appendChild(teamCell);
+        
+        // Win cell (total wins)
+        const winCell = document.createElement('td');
+        winCell.textContent = team.totalWins;
+        newRow.appendChild(winCell);
+        
+        // Kill Points cell (total kills)
+        const killCell = document.createElement('td');
+        killCell.textContent = team.totalKills;
+        newRow.appendChild(killCell);
+        
+        // Placement Rank cell - shows final tournament ranking (same as Rank column)
+        const placementRankCell = document.createElement('td');
+        placementRankCell.textContent = index + 1; // Final tournament rank
+        newRow.appendChild(placementRankCell);
+        
+        // Placement Points cell (total placement points)
+        const placementPointsCell = document.createElement('td');
+        placementPointsCell.textContent = team.totalPoints - team.totalKills;
+        newRow.appendChild(placementPointsCell);
+        
+        // Total Points cell
+        const totalCell = document.createElement('td');
+        totalCell.className = 'total-cell';
+        totalCell.textContent = team.totalPoints;
+        newRow.appendChild(totalCell);
+        
+        tbody.appendChild(newRow);
+      });
+
       finalCalculated = true;
-      alert("🏆 Final tournament results calculated!");
+      
+      // Check if any ties were resolved by tie-breaker
+      const tiedTeams = teamsData.filter((team, index, array) => {
+        if (index === 0) return false;
+        return team.totalPoints === array[index - 1].totalPoints;
+      });
+      
+      if (tiedTeams.length > 0) {
+        alert("🏆 Final Result Calculated! Tie-breaker rules were applied for teams with equal points.");
+      } else {
+        alert("🏆 Final tournament results calculated!");
+      }
     });
 
     document.getElementById('resetButton').addEventListener('click', () => {
       if (!confirm("Reset all points but keep team names?")) return;
       teamMemory = [];
       finalCalculated = false;
+      
+      // Clear all rows and recreate with empty data
+      const tbody = table.querySelector('tbody');
+      const currentRows = Array.from(tbody.querySelectorAll('tr'));
+      currentRows.forEach(row => tbody.removeChild(row));
+      
+      // Recreate rows with empty data
+      for (let i = 1; i <= 12; i++) {
+        const row = document.createElement('tr');
+        
+        const rankCell = document.createElement('td');
+        rankCell.className = 'rank-cell';
+        rankCell.textContent = i;
+        
+        const teamCell = document.createElement('td');
+        teamCell.className = 'team-name';
+        teamCell.contentEditable = true;
+        
+        const winCell = document.createElement('td');
+        winCell.contentEditable = true;
+        
+        const killCell = document.createElement('td');
+        killCell.contentEditable = true;
+        
+        const placementRankCell = document.createElement('td');
+        placementRankCell.contentEditable = true;
+        
+        const placementPointsCell = document.createElement('td');
+        
+        const totalCell = document.createElement('td');
+        totalCell.className = 'total-cell';
+        
+        row.appendChild(rankCell);
+        row.appendChild(teamCell);
+        row.appendChild(winCell);
+        row.appendChild(killCell);
+        row.appendChild(placementRankCell);
+        row.appendChild(placementPointsCell);
+        row.appendChild(totalCell);
+        
+        tbody.appendChild(row);
+      }
+      
+      // Reinitialize real-time updates
+      realTimeUpdate();
+    });
+
+    // Download functionality
+    document.getElementById('downloadButton').addEventListener('click', () => {
+      if (!finalCalculated) {
+        alert("⚠️ Please calculate Final Result first before downloading!");
+        return;
+      }
+
+      // Get current table data
       const rows = table.querySelectorAll('tbody tr');
+      const downloadTbody = document.querySelector('#downloadTable tbody');
+      
+      // Clear existing download table
+      downloadTbody.innerHTML = '';
+      
+      // Populate download table
       rows.forEach(row => {
         const cells = row.querySelectorAll('td');
-        for (let i = 2; i <= 6; i++) cells[i].textContent = '';
+        const newRow = document.createElement('tr');
+        
+        // Rank
+        const rankCell = document.createElement('td');
+        rankCell.className = 'rank-cell';
+        rankCell.textContent = cells[0].textContent;
+        newRow.appendChild(rankCell);
+        
+        // Team Name
+        const teamCell = document.createElement('td');
+        teamCell.textContent = cells[1].textContent;
+        newRow.appendChild(teamCell);
+        
+        // Wins
+        const winCell = document.createElement('td');
+        winCell.textContent = cells[2].textContent;
+        newRow.appendChild(winCell);
+        
+        // Kills
+        const killCell = document.createElement('td');
+        killCell.textContent = cells[3].textContent;
+        newRow.appendChild(killCell);
+        
+        // Placement Points
+        const placementCell = document.createElement('td');
+        placementCell.textContent = cells[5].textContent;
+        newRow.appendChild(placementCell);
+        
+        // Total Points
+        const totalCell = document.createElement('td');
+        totalCell.className = 'total-cell';
+        totalCell.textContent = cells[6].textContent;
+        newRow.appendChild(totalCell);
+        
+        downloadTbody.appendChild(newRow);
       });
+      
+      // Show download container
+      document.getElementById('downloadContainer').style.display = 'block';
+    });
+
+    // Save as image functionality
+    document.getElementById('saveImageBtn').addEventListener('click', () => {
+      const downloadPreview = document.getElementById('downloadPreview');
+      
+      html2canvas(downloadPreview, {
+        backgroundColor: '#1a1a2e',
+        scale: 2, // Higher quality
+        useCORS: true,
+        logging: false
+      }).then(canvas => {
+        // Convert canvas to image
+        const image = canvas.toDataURL('image/png');
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.download = 'PRIDE_ESPORTS_OVERALL_STANDINGS.png';
+        link.href = image;
+        link.click();
+      });
+    });
+
+    // Close download container
+    document.getElementById('closeDownloadBtn').addEventListener('click', () => {
+      document.getElementById('downloadContainer').style.display = 'none';
     });
   </script>
 </body>
