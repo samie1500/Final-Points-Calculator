@@ -477,6 +477,7 @@
 
   <div class="footer">
     <p>Free Fire Tournament Points System | © 2025 PRIDE ESPORTS COMMUNITY</p>
+    <p>Tie-Breaker: Higher Kills → Higher Placement Points → Better Placement History</p>
   </div>
 
   <!-- Download Container (hidden by default) -->
@@ -742,7 +743,7 @@
       // Enhanced data structure for tie-breaker
       const teamStats = {};
 
-      // Calculate final scores from all matches with tie-breaker data
+      // Calculate final scores from all matches
       teamMemory.forEach(match => {
         match.forEach(team => {
           if (!teamStats[team.teamName]) {
@@ -750,8 +751,8 @@
               totalKills: 0, 
               totalPlacementPoints: 0,
               totalWins: 0,
-              placementRanks: [], // Store all placement ranks for tie-breaking
-              totalPoints: 0
+              totalPoints: 0,
+              placementRanks: [] // Store placement ranks for tie-breaking
             };
           }
           
@@ -772,27 +773,37 @@
         });
       });
 
-      // Prepare teams for sorting with tie-breaker
+      // Prepare teams for sorting with NEW tie-breaker
       const teamsData = [];
       for (const teamName in teamStats) {
         teamsData.push({
           teamName: teamName,
           totalPoints: teamStats[teamName].totalPoints,
           totalKills: teamStats[teamName].totalKills,
+          totalPlacementPoints: teamStats[teamName].totalPlacementPoints,
           totalWins: teamStats[teamName].totalWins,
-          placementRanks: teamStats[teamName].placementRanks.sort((a, b) => a - b) // Sort ranks ascending (lower is better)
+          placementRanks: teamStats[teamName].placementRanks.sort((a, b) => a - b) // Sort ranks ascending
         });
       }
 
-      // Sort with tie-breaker logic
+      // NEW TIE-BREAKER: First preference to kills, then placement points
       teamsData.sort((a, b) => {
         // Primary sort: Total Points (descending)
         if (b.totalPoints !== a.totalPoints) {
           return b.totalPoints - a.totalPoints;
         }
         
-        // TIE-BREAKER 1: Compare placement ranks (better placements win)
-        // Sort both teams' placement ranks in ascending order
+        // TIE-BREAKER 1: Higher total kills win
+        if (b.totalKills !== a.totalKills) {
+          return b.totalKills - a.totalKills;
+        }
+        
+        // TIE-BREAKER 2: Higher total placement points win
+        if (b.totalPlacementPoints !== a.totalPlacementPoints) {
+          return b.totalPlacementPoints - a.totalPlacementPoints;
+        }
+        
+        // TIE-BREAKER 3: Compare placement ranks (better placements win)
         const aRanks = [...a.placementRanks].sort((x, y) => x - y);
         const bRanks = [...b.placementRanks].sort((x, y) => x - y);
         
@@ -807,11 +818,6 @@
         // If all compared placements are equal, team with more placements wins
         if (aRanks.length !== bRanks.length) {
           return bRanks.length - aRanks.length; // More placements is better
-        }
-        
-        // TIE-BREAKER 2: Total Kills (higher kills win)
-        if (b.totalKills !== a.totalKills) {
-          return b.totalKills - a.totalKills;
         }
         
         // If still tied, maintain original order
@@ -858,7 +864,7 @@
         
         // Placement Points cell (total placement points)
         const placementPointsCell = document.createElement('td');
-        placementPointsCell.textContent = team.totalPoints - team.totalKills;
+        placementPointsCell.textContent = team.totalPlacementPoints;
         newRow.appendChild(placementPointsCell);
         
         // Total Points cell
@@ -879,7 +885,7 @@
       });
       
       if (tiedTeams.length > 0) {
-        alert("🏆 Final Result Calculated! Tie-breaker rules were applied for teams with equal points.");
+        alert("🏆 Final Result Calculated!\nTie-Breaker Applied: Higher Kills → Higher Placement Points → Better Placement History");
       } else {
         alert("🏆 Final tournament results calculated!");
       }
